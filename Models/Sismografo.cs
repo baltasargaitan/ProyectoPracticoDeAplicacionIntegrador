@@ -6,7 +6,9 @@ namespace RedSismica.Models
     {
         public int Id { get; set; }
         public string Identificador { get; set; }
-        public string Estado { get; set; }
+
+        public int EstadoId { get; set; }
+        public Estado Estado { get; set; }
 
         public int EstacionSismologicaId { get; set; }
         public EstacionSismologica EstacionSismologica { get; set; }

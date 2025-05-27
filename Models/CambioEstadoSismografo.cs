@@ -1,6 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RedSismica.Models
 {
@@ -11,11 +9,12 @@ namespace RedSismica.Models
         public int SismografoId { get; set; }
         public Sismografo Sismografo { get; set; }
 
-        public string Estado { get; set; } // Ej: "Fuera de Servicio"
+        public int EstadoId { get; set; }
+        public Estado Estado { get; set; }
 
         public DateTime FechaHoraCambio { get; set; }
 
-        public int EmpleadoId { get; set; }  // FK al empleado responsable del cierre
-        public Empleado Responsable { get; set; } // ✅ Esta propiedad soluciona el error
+        public int EmpleadoId { get; set; }
+        public Empleado Responsable { get; set; }
     }
 }

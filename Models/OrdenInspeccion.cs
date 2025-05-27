@@ -17,5 +17,11 @@ namespace RedSismica.Models
         public Empleado Empleado { get; set; }
 
         public List<MotivoBajaSismografo> MotivosBaja { get; set; }
+
+        public bool EsCompletamenteRealizada()
+        {
+            // TODO: Implementa la lógica real según tus tareas
+            return !EstaCerrada;
+        }
     }
 }

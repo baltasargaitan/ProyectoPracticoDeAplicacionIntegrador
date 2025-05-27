@@ -15,6 +15,14 @@ namespace RedSismica.Data
             // Verifica si ya hay datos
             if (context.Empleados.Any()) return;
 
+            // Estados
+            var estados = new List<Estado>
+            {
+                new Estado { Id = 1, Nombre = "Operativo" },
+                new Estado { Id = 2, Nombre = "Fuera de Servicio" }
+            };
+            context.Estados.AddRange(estados);
+
             // Empleados
             var empleados = new List<Empleado>
             {
@@ -27,10 +35,10 @@ namespace RedSismica.Data
             // Tipos de motivo de baja
             var tiposMotivo = new List<TipoMotivoBaja>
             {
-                new TipoMotivoBaja { Id = 1, Descripcion = "Falla eléctrica" },
-                new TipoMotivoBaja { Id = 2,Nombre = "Falla" , Descripcion = "Falla en sensor" },
-                new TipoMotivoBaja { Id = 3,Nombre = "Vandalismo" , Descripcion = "Vandalismo" },
-                new TipoMotivoBaja { Id = 4,Nombre = "Clima" ,Descripcion = "Condiciones climáticas" }
+                new TipoMotivoBaja { Id = 1, Nombre = "Falla eléctrica", Descripcion = "Falla eléctrica" },
+                new TipoMotivoBaja { Id = 2, Nombre = "Falla", Descripcion = "Falla en sensor" },
+                new TipoMotivoBaja { Id = 3, Nombre = "Vandalismo", Descripcion = "Vandalismo" },
+                new TipoMotivoBaja { Id = 4, Nombre = "Clima", Descripcion = "Condiciones climáticas" }
             };
             context.TiposMotivoBaja.AddRange(tiposMotivo);
 
@@ -46,7 +54,7 @@ namespace RedSismica.Data
                     {
                         Id = 1,
                         Identificador = "SG-1001",
-                        Estado = "Operativo"
+                        EstadoId = 1 // Operativo
                     }
                 },
                 new EstacionSismologica
@@ -58,7 +66,7 @@ namespace RedSismica.Data
                     {
                         Id = 2,
                         Identificador = "SG-1002",
-                        Estado = "Operativo"
+                        EstadoId = 1 // Operativo
                     }
                 }
             };
