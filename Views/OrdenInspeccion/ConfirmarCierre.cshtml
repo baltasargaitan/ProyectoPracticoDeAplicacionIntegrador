@@ -1,0 +1,21 @@
+@model RedSismica.Models.OrdenInspeccion
+@{
+    var motivos = ViewBag.Motivos as List<RedSismica.Models.TipoMotivoBaja>;
+}
+<h2>Cerrar orden @Model.Id</h2>
+<form method="post">
+    <label>Observación:</label>
+    <textarea name="observacion"></textarea>
+
+    <h3>Motivos de fuera de servicio</h3>
+    @for (int i = 0; i < motivos.Count; i++)
+    {
+        <div>
+            <input type="checkbox" name="motivoIds" value="@motivos[i].Id" />
+            @motivos[i].Nombre
+            <input name="comentarios" placeholder="Comentario" />
+        </div>
+    }
+
+    <button type="submit">Cerrar orden</button>
+</form>

@@ -1,0 +1,13 @@
+using System.Collections.Generic;
+
+namespace RedSismica.Models
+{
+    public class Sismografo
+    {
+        public int Id { get; set; }
+        public string Identificador { get; set; }
+        public string Estado { get; set; }
+
+        public List<CambioEstadoSismografo> CambiosEstado { get; set; }
+    }
+}
