@@ -22,6 +22,7 @@ namespace RedSismica.Controllers
             var ordenes = _context.OrdenesInspeccion
                 .Include(o => o.EstacionSismologica)
                     .ThenInclude(e => e.Sismografo)
+                .Include(o => o.Empleado) 
                 .Where(o => !o.EstaCerrada)
                 .ToList();
 
@@ -109,5 +110,12 @@ namespace RedSismica.Controllers
             // Simulación de notificación (puedes usar logs, emails, etc.)
             Console.WriteLine($"[NOTIFICACIÓN] Sismógrafo {sismografoId} marcado como '{cambio.Estado}' el {cambio.FechaHoraCambio}.");
         }
+    
+     // Acción para la pantalla extra
+        public IActionResult SeleccionarAccion()
+        {
+            return View();
+        }
     }
 }
+
