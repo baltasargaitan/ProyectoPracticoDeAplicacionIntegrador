@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 
 namespace RedSismica.Models
@@ -7,7 +6,7 @@ namespace RedSismica.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public string Rol { get; set; } // Responsable de Inspecciones, etc.
+        public string Rol { get; set; }
 
         public List<OrdenInspeccion> OrdenesInspeccion { get; set; }
     }

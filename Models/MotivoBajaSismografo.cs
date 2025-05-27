@@ -9,6 +9,6 @@ namespace RedSismica.Models
         public TipoMotivoBaja Tipo { get; set; }
 
         public int OrdenInspeccionId { get; set; }
-        public OrdenInspeccion Orden { get; set; }
+        public OrdenInspeccion OrdenInspeccion { get; set; }
     }
 }
