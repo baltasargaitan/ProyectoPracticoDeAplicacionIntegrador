@@ -8,6 +8,9 @@ namespace RedSismica.Models
         public string Identificador { get; set; }
         public string Estado { get; set; }
 
+        public int EstacionSismologicaId { get; set; }
+        public EstacionSismologica EstacionSismologica { get; set; }
+
         public List<CambioEstadoSismografo> CambiosEstado { get; set; }
     }
 }

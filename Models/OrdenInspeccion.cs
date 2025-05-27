@@ -13,8 +13,8 @@ namespace RedSismica.Models
         public int EstacionSismologicaId { get; set; }
         public EstacionSismologica EstacionSismologica { get; set; }
 
-        public int ResponsableId { get; set; }
-        public Empleado Responsable { get; set; }
+        public int EmpleadoId { get; set; }
+        public Empleado Empleado { get; set; }
 
         public List<MotivoBajaSismografo> MotivosBaja { get; set; }
     }

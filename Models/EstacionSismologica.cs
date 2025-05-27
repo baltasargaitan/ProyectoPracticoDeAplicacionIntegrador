@@ -4,8 +4,8 @@ namespace RedSismica.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
+        public string Ubicacion { get; set; }
 
-        public int SismografoId { get; set; }
         public Sismografo Sismografo { get; set; }
     }
 }

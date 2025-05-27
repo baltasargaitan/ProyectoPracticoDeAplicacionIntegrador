@@ -49,3 +49,4 @@ C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\refint\RedSi
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.pdb
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.genruntimeconfig.cache
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\ref\RedSismica.dll
+C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.sourcelink.json
