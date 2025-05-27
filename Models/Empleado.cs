@@ -6,7 +6,8 @@ namespace RedSismica.Models
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public string Rol { get; set; }
+        public int RolId { get; set; }
+        public Rol Rol { get; set; }
 
         public List<OrdenInspeccion> OrdenesInspeccion { get; set; }
     }

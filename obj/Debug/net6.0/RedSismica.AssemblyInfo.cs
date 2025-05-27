@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RedSismica")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9274672d5f1b40b897ead8e724e400a40b6be98a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f685b579b0fa263ab3541a41b916b5c5c879d6bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("RedSismica")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RedSismica")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

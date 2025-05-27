@@ -18,6 +18,9 @@ namespace RedSismica.Data
         public DbSet<CambioEstadoSismografo> CambiosEstadoSismografo { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Estado> Estados { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Sesion> Sesiones { get; set; }
+        public DbSet<Rol> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,6 +66,20 @@ namespace RedSismica.Data
                 .HasOne(c => c.Estado)
                 .WithMany()
                 .HasForeignKey(c => c.EstadoId);
+            modelBuilder.Entity<Empleado>()
+                .HasOne(e => e.Rol)
+                .WithMany()
+                .HasForeignKey(e => e.RolId);
+
+            modelBuilder.Entity<Usuario>()
+                .HasOne(u => u.Empleado)
+                .WithMany()
+                .HasForeignKey(u => u.EmpleadoId);
+
+            modelBuilder.Entity<Sesion>()
+                .HasOne(s => s.Usuario)
+                .WithMany()
+                .HasForeignKey(s => s.UsuarioId);
         }
     }
 }
