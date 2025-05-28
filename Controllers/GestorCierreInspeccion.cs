@@ -1,97 +1,173 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RedSismica.Models;
-using RedSismica.Data;
 using Microsoft.EntityFrameworkCore;
+using RedSismica.Data;
+using RedSismica.Models;
 
 namespace RedSismica.Models
 {
     public class GestorCierreInspeccion
     {
         private readonly RedSismicaContext _context;
+        private Sesion sesionActual;
 
-        public GestorCierreInspeccion(RedSismicaContext context)
+        public GestorCierreInspeccion(RedSismicaContext context, Sesion sesion)
         {
             _context = context;
+            sesionActual = sesion;
         }
 
-        public List<OrdenInspeccion> getOrdenesCompletamenteRealizadas(int empleadoId)
+        // 1. Buscar Responsable de Inspección (RI) logueado
+        public Empleado buscarRILogueado()
         {
-            return _context.OrdenesInspeccion
-                .Include(o => o.EstacionSismologica)
-                    .ThenInclude(e => e.Sismografo)
-                        .ThenInclude(s => s.Estado)
+            return _context.Empleados.FirstOrDefault(e => e.Id == 1); // Hardcode para demo
+        }
+
+        // 2. Buscar órdenes completamente realizadas asignadas al RI
+        public List<OrdenDeInspeccion> buscarOrdenes()
+        {
+            var empleado = buscarRILogueado();
+            if (empleado == null)
+            {
+                throw new Exception("No se encontró un empleado asociado a la sesión actual.");
+            }
+
+            var ordenes = _context.OrdenesInspeccion
+                .Include(o => o.Estacion)
                 .Include(o => o.Empleado)
-                .Where(o => !o.EstaCerrada && o.EmpleadoId == empleadoId)
+                .Include(o => o.CambiosEstado)
+                .Where(o => o.EmpleadoId == empleado.Id && o.EstadoId == 4) // Estado "Completamente Realizada"
                 .ToList();
+
+            if (!ordenes.Any())
+            {
+                throw new Exception("No se encontraron órdenes completamente realizadas para el empleado logueado.");
+            }
+
+            return ordenes;
         }
 
-        public OrdenInspeccion tomarSeleccionOrden(int ordenId)
+        // 3. Ordenar las órdenes
+        public List<OrdenDeInspeccion> ordenarOrdenes(List<OrdenDeInspeccion> ordenes)
+        {
+            return ordenes.OrderBy(o => o.fechaHoraInicio).ToList();
+        }
+
+        // 4. Tomar selección de una orden
+        public OrdenDeInspeccion tomarSeleccionOrden(int ordenId)
         {
             return _context.OrdenesInspeccion
-                .Include(o => o.EstacionSismologica)
-                    .ThenInclude(e => e.Sismografo)
-                        .ThenInclude(s => s.Estado)
-                .Include(o => o.MotivosBaja)
+                .Include(o => o.Estacion)
+                .Include(o => o.CambiosEstado)
                 .FirstOrDefault(o => o.Id == ordenId);
         }
 
-        public void tomarObservacionCierre(OrdenInspeccion orden, string observacion)
+        // 5. Tomar observación de cierre
+        public void tomarObservacion(OrdenDeInspeccion orden, string observacion)
         {
+            if (string.IsNullOrWhiteSpace(observacion))
+                throw new ArgumentException("La observación no puede estar vacía.");
+
             orden.ObservacionCierre = observacion;
         }
 
-        public void tomarMotivosFueraDeServicio(OrdenInspeccion orden, int[] motivoIds, string[] comentarios)
+        // 6. Buscar motivos fuera de servicio disponibles
+        public List<MotivoTipo> buscarMotivosFueraServicio()
         {
-            var motivos = motivoIds.Select((mId, i) => new MotivoBajaSismografo
-            {
-                TipoMotivoBajaId = mId,
-                Comentario = comentarios[i],
-                OrdenInspeccionId = orden.Id
-            }).ToList();
-
-            orden.MotivosBaja = motivos;
+            return _context.MotivosTipo.ToList();
         }
 
-        public void cerrarOrden(OrdenInspeccion orden, int empleadoId)
+        // 7. Tomar motivo fuera de servicio seleccionado
+        public void tomarMotivoFueraServicio(OrdenDeInspeccion orden, int motivoId, string comentario)
         {
-            orden.EstaCerrada = true;
-            orden.FechaCierre = DateTime.Now;
+            var motivoTipo = _context.MotivosTipo.FirstOrDefault(m => m.Id == motivoId);
+            if (motivoTipo == null) throw new Exception($"MotivoTipo con Id {motivoId} no encontrado.");
 
-            var sismografo = orden.EstacionSismologica.Sismografo;
+            var estadoFueraServicio = _context.Estados.FirstOrDefault(e => e.nombreEstado == "Fuera de Servicio");
+            if (estadoFueraServicio == null) throw new Exception("No existe un estado 'Fuera de Servicio'.");
 
-            // Buscar el estado "Fuera de Servicio"
-            var estadoFueraServicio = _context.Estados.FirstOrDefault(e => e.Nombre == "Fuera de Servicio");
-            if (estadoFueraServicio == null)
-                throw new Exception("No existe el estado 'Fuera de Servicio' en la base de datos.");
-
-            sismografo.EstadoId = estadoFueraServicio.Id;
-            sismografo.Estado = estadoFueraServicio;
-
-            var cambioEstado = new CambioEstadoSismografo
+            var motivo = new MotivoFueraServicio(comentario)
             {
-                SismografoId = sismografo.Id,
-                EstadoId = estadoFueraServicio.Id,
-                Estado = estadoFueraServicio,
-                FechaHoraCambio = DateTime.Now,
-                EmpleadoId = empleadoId
+                motivoTipo = motivoTipo
             };
 
-            _context.CambiosEstadoSismografo.Add(cambioEstado);
-            _context.SaveChanges();
+            var cambioEstado = new CambioEstado(DateTime.Now, estadoFueraServicio)
+            {
+                motivoFueraServicio = motivo,
+                OrdenDeInspeccionId = orden.Id,
+                EmpleadoId = buscarRILogueado().Id
+            };
 
-            notificarCambioEstado(sismografo, cambioEstado, orden.MotivosBaja);
+            orden.agregarCambioEstado(cambioEstado);
+            _context.CambiosEstado.Add(cambioEstado);
+            _context.SaveChanges();
         }
 
-        public void notificarCambioEstado(Sismografo sismografo, CambioEstadoSismografo cambio, List<MotivoBajaSismografo> motivos)
+        // 8. Validar datos mínimos requeridos para cerrar la orden
+        public bool validarDatosMinimosReqParaCierre(OrdenDeInspeccion orden)
         {
-            // Simulación de notificación
-            Console.WriteLine($"[NOTIFICACIÓN] Sismógrafo {sismografo.Identificador} marcado como '{cambio.Estado.Nombre}' el {cambio.FechaHoraCambio}.");
-            foreach (var motivo in motivos)
-            {
-                Console.WriteLine($"Motivo: {motivo.TipoMotivoBajaId} - {motivo.Comentario}");
-            }
+            return !string.IsNullOrWhiteSpace(orden.ObservacionCierre) && orden.CambiosEstado.Any(c => c.motivoFueraServicio != null);
+        }
+
+        // 9. Obtener estado "Cerrado" para la orden
+        public Estado buscarEstadoCerradoParaOrden()
+        {
+            return _context.Estados.FirstOrDefault(e => e.esAmbitoOrdenInspeccion() && e.esCerrada());
+        }
+
+        // 10. Obtener estado "Fuera de Servicio" para el sismógrafo
+        public Estado buscarEstadoFueraDeServicioParaSismografo()
+        {
+            return _context.Estados.FirstOrDefault(e => e.esAmbitoSismografico() && e.nombreEstado == "Fuera de Servicio");
+        }
+
+        // 11. Cerrar la orden
+        public void cerrarOrden(OrdenDeInspeccion orden)
+        {
+            var estadoCerrado = buscarEstadoCerradoParaOrden();
+            if (estadoCerrado == null)
+                throw new Exception("No existe un estado 'Cerrado' para órdenes de inspección.");
+
+            orden.setEstado(estadoCerrado);
+            orden.setFechaHoraCierre(DateTime.Now);
+
+            var estadoFueraServicio = buscarEstadoFueraDeServicioParaSismografo();
+            if (estadoFueraServicio == null)
+                throw new Exception("No existe un estado 'Fuera de Servicio' para sismógrafos.");
+
+            orden.Estacion.Sismografo.setEstadoActual(estadoFueraServicio);
+        }
+
+        // 12. Enviar sismógrafo para reparación
+        public void enviarSismografoParaReparacion(EstacionSismologica estacion)
+        {
+            estacion.Sismografo.enviarAReparar();
+        }
+
+        // 13. Obtener mail del responsable de reparación
+        public string obtenerMailResponsableDeReparacion()
+        {
+            var empleado = _context.Empleados.FirstOrDefault(e => e.esResponsableDeReparacion());
+            return empleado?.obtenerMail();
+        }
+
+        // 14. Publicar en monitores
+        public void publicarEnMonitores(string mensaje)
+        {
+            Console.WriteLine($"[MONITOR] {mensaje}");
+        }
+
+        // 15. Enviar notificaciones por mail
+        public void enviarNotificacionesPorMail(string destinatario, string asunto, string cuerpo)
+        {
+            Console.WriteLine($"[EMAIL] Enviando a: {destinatario}\nAsunto: {asunto}\nCuerpo: {cuerpo}");
+        }
+
+        // 16. Finalizar caso de uso
+        public void finCU()
+        {
+            Console.WriteLine("Caso de uso finalizado.");
         }
     }
 }

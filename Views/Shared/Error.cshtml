@@ -1,0 +1,7 @@
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Ha ocurrido un error</h1>
+<p>@ViewBag.ErrorMessage</p>
+<a href="@Url.Action("SeleccionarAccion", "OrdenInspeccion")" class="btn btn-primary">Volver</a>

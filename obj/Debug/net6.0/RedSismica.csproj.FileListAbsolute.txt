@@ -38,6 +38,7 @@ C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.c
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.RazorAssemblyInfo.cache
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.RazorAssemblyInfo.cs
+C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.sourcelink.json
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\scopedcss\bundle\RedSismica.styles.css
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\staticwebassets.build.json
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\staticwebassets.build.json.cache
@@ -49,4 +50,3 @@ C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\refint\RedSi
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.pdb
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.genruntimeconfig.cache
 C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\ref\RedSismica.dll
-C:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\obj\Debug\net6.0\RedSismica.sourcelink.json

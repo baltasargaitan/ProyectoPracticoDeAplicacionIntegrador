@@ -10,12 +10,13 @@ namespace RedSismica.Data
         {
         }
 
+        // DbSets para las entidades del dominio
         public DbSet<EstacionSismologica> Estaciones { get; set; }
         public DbSet<Sismografo> Sismografos { get; set; }
-        public DbSet<OrdenInspeccion> OrdenesInspeccion { get; set; }
-        public DbSet<TipoMotivoBaja> TiposMotivoBaja { get; set; }
-        public DbSet<MotivoBajaSismografo> MotivosBajaSismografo { get; set; }
-        public DbSet<CambioEstadoSismografo> CambiosEstadoSismografo { get; set; }
+        public DbSet<OrdenDeInspeccion> OrdenesInspeccion { get; set; }
+        public DbSet<MotivoTipo> MotivosTipo { get; set; }
+        public DbSet<MotivoFueraServicio> MotivosFueraServicio { get; set; }
+        public DbSet<CambioEstado> CambiosEstado { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Estado> Estados { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -26,60 +27,75 @@ namespace RedSismica.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Relación uno a muchos entre OrdenInspeccion y MotivoBajaSismografo
-            modelBuilder.Entity<MotivoBajaSismografo>()
-                .HasOne(m => m.OrdenInspeccion)
-                .WithMany(o => o.MotivosBaja)
-                .HasForeignKey(m => m.OrdenInspeccionId);
-
-            // Relación uno a muchos entre EstacionSismologica y Sismografo
+            // Relación 1 a 1 entre EstacionSismologica y Sismografo
             modelBuilder.Entity<EstacionSismologica>()
                 .HasOne(e => e.Sismografo)
-                .WithOne(s => s.EstacionSismologica)
-                .HasForeignKey<Sismografo>(s => s.EstacionSismologicaId);
+                .WithOne(s => s.estacion)
+                .HasForeignKey<Sismografo>(s => s.EstacionSismologicaId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación uno a muchos entre Empleado y OrdenInspeccion
-            modelBuilder.Entity<OrdenInspeccion>()
+            // Relación uno a muchos entre Empleado y OrdenDeInspeccion
+            modelBuilder.Entity<OrdenDeInspeccion>()
                 .HasOne(o => o.Empleado)
                 .WithMany(e => e.OrdenesInspeccion)
-                .HasForeignKey(o => o.EmpleadoId);
+                .HasForeignKey(o => o.EmpleadoId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // CambioEstadoSismografo (auditoría de cambios)
-            modelBuilder.Entity<CambioEstadoSismografo>()
-                .HasOne(c => c.Sismografo)
-                .WithMany(s => s.CambiosEstado)
-                .HasForeignKey(c => c.SismografoId);
+            // Relación uno a muchos entre OrdenDeInspeccion y CambioEstado
+            modelBuilder.Entity<CambioEstado>()
+                .HasOne(c => c.OrdenDeInspeccion)
+                .WithMany(o => o.CambiosEstado)
+                .HasForeignKey(c => c.OrdenDeInspeccionId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CambioEstadoSismografo>()
-                .HasOne(c => c.Responsable)
+            // Relación uno a uno entre CambioEstado y Estado
+            modelBuilder.Entity<CambioEstado>()
+                .HasOne(c => c.estadoActual)
                 .WithMany()
-                .HasForeignKey(c => c.EmpleadoId);
+                .HasForeignKey(c => c.EstadoId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación entre Sismografo y Estado
+            // Relación uno a uno entre CambioEstado y MotivoFueraServicio
+            modelBuilder.Entity<CambioEstado>()
+                .HasOne(c => c.motivoFueraServicio)
+                .WithMany()
+                .HasForeignKey(c => c.MotivoFueraServicioId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación uno a uno entre CambioEstado y Empleado (Responsable)
+            modelBuilder.Entity<CambioEstado>()
+                .HasOne(c => c.empleado)
+                .WithMany()
+                .HasForeignKey(c => c.EmpleadoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relación uno a uno entre Sismografo y Estado
             modelBuilder.Entity<Sismografo>()
                 .HasOne(s => s.Estado)
                 .WithMany()
-                .HasForeignKey(s => s.EstadoId);
+                .HasForeignKey(s => s.EstadoId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Relación entre CambioEstadoSismografo y Estado
-            modelBuilder.Entity<CambioEstadoSismografo>()
-                .HasOne(c => c.Estado)
-                .WithMany()
-                .HasForeignKey(c => c.EstadoId);
+            // Relación uno a uno entre Empleado y Rol
             modelBuilder.Entity<Empleado>()
-                .HasOne(e => e.Rol)
+                .HasOne(e => e.rol)
                 .WithMany()
-                .HasForeignKey(e => e.RolId);
+                .HasForeignKey(e => e.RolId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Relación uno a uno entre Usuario y Empleado
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Empleado)
                 .WithMany()
-                .HasForeignKey(u => u.EmpleadoId);
+                .HasForeignKey(u => u.EmpleadoId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Relación uno a uno entre Sesion y Usuario
             modelBuilder.Entity<Sesion>()
                 .HasOne(s => s.Usuario)
                 .WithMany()
-                .HasForeignKey(s => s.UsuarioId);
+                .HasForeignKey(s => s.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

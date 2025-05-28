@@ -1,11 +1,10 @@
-@model RedSismica.Models.OrdenInspeccion
+<!-- filepath: c:\Users\balta\Desktop\´PPAI\RedSismica_EF_SQLite\Views\OrdenInspeccion\ConfirmarCierre.cshtml -->
+@model RedSismica.Models.OrdenDeInspeccion
 @{
-    var motivos = ViewBag.Motivos as List<RedSismica.Models.TipoMotivoBaja>;
+    var motivos = ViewBag.Motivos as List<RedSismica.Models.MotivoTipo>;
     ViewData["Title"] = "Cerrar Orden de Inspección";
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
@@ -14,11 +13,11 @@
         <div class="card-body">
             <dl class="row mb-4">
                 <dt class="col-sm-3">Estación Sismológica:</dt>
-                <dd class="col-sm-9">@Model.EstacionSismologica?.Nombre</dd>
+                <dd class="col-sm-9">@Model.Estacion?.nombre</dd>
                 <dt class="col-sm-3">Sismógrafo:</dt>
-                <dd class="col-sm-9">@Model.EstacionSismologica?.Sismografo?.Identificador</dd>
+                <dd class="col-sm-9">@Model.Estacion?.Sismografos.FirstOrDefault()?.IdentificacionSismografo</dd>
                 <dt class="col-sm-3">Responsable:</dt>
-                <dd class="col-sm-9">@Model.Empleado?.Nombre</dd>
+                <dd class="col-sm-9">@Model.Empleado?.nombre</dd>
             </dl>
             <form method="post" class="needs-validation" novalidate>
                 <div class="mb-3">

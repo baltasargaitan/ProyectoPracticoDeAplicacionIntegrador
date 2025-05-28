@@ -2,60 +2,91 @@ using Microsoft.AspNetCore.Mvc;
 using RedSismica.Data;
 using RedSismica.Models;
 using System.Linq;
+using System;
 
 namespace RedSismica.Controllers
 {
     public class OrdenInspeccionController : Controller
     {
-        private readonly RedSismicaContext _context;
         private readonly GestorCierreInspeccion _gestor;
 
         public OrdenInspeccionController(RedSismicaContext context)
         {
-            _context = context;
-            _gestor = new GestorCierreInspeccion(_context);
+            // Inyección del contexto y creación del gestor
+            _gestor = new GestorCierreInspeccion(context, new Sesion());
         }
 
+        public IActionResult SeleccionarAccion()
+        {
+            // Acción para seleccionar la acción a realizar
+            return View();
+        }
+
+        // Acción para mostrar las órdenes completamente realizadas
         public IActionResult Index()
         {
-            int empleadoId = GetEmpleadoIdActual();
-            var ordenes = _gestor.getOrdenesCompletamenteRealizadas(empleadoId);
-            return View(ordenes);
+            try
+            {
+                var ordenes = _gestor.buscarOrdenes();
+                return View(ordenes);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+                return View("Error");
+            }
         }
 
+        // Acción GET para confirmar el cierre de una orden
         public IActionResult ConfirmarCierre(int id)
         {
             var orden = _gestor.tomarSeleccionOrden(id);
-            if (orden == null) return NotFound();
+            if (orden == null)
+            {
+                ViewBag.ErrorMessage = "No se encontró la orden seleccionada.";
+                return View("Error");
+            }
 
-            ViewBag.Motivos = _context.TiposMotivoBaja.ToList();
+            ViewBag.Motivos = _gestor.buscarMotivosFueraServicio();
             return View(orden);
         }
 
+        // Acción POST para procesar el cierre de una orden
         [HttpPost]
         public IActionResult ConfirmarCierre(int id, string observacion, int[] motivoIds, string[] comentarios)
         {
             var orden = _gestor.tomarSeleccionOrden(id);
-            if (orden == null) return NotFound();
+            if (orden == null)
+            {
+                ViewBag.ErrorMessage = "No se encontró la orden seleccionada.";
+                return View("Error");
+            }
 
+            // Validar datos ingresados
             if (string.IsNullOrWhiteSpace(observacion) || motivoIds.Length == 0 || comentarios.Length != motivoIds.Length)
             {
                 ModelState.AddModelError("", "Debe ingresar una observación y al menos un motivo con su comentario.");
-                ViewBag.Motivos = _context.TiposMotivoBaja.ToList();
+                ViewBag.Motivos = _gestor.buscarMotivosFueraServicio();
                 return View(orden);
             }
 
-            _gestor.tomarObservacionCierre(orden, observacion);
-            _gestor.tomarMotivosFueraDeServicio(orden, motivoIds, comentarios);
-            _gestor.cerrarOrden(orden, GetEmpleadoIdActual());
+            try
+            {
+                // Delegar la lógica al gestor
+                _gestor.tomarObservacion(orden, observacion);
+                for (int i = 0; i < motivoIds.Length; i++)
+                {
+                    _gestor.tomarMotivoFueraServicio(orden, motivoIds[i], comentarios[i]);
+                }
+                _gestor.cerrarOrden(orden);
 
-            return RedirectToAction("Index");
-        }
-
-        private int GetEmpleadoIdActual()
-        {
-            // Simula que el usuario actual es el empleado 1
-            return 1;
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
+                return View("Error");
+            }
         }
     }
 }
