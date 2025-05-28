@@ -52,7 +52,8 @@ dotnet run
 
 ### **6. Abrir el navegador**
 Ve a [http://localhost:5000](http://localhost:5000) (o el puerto que indique la consola).
-
+ó
+Ve a [http://localhost:5000](http://localhost:5001)
 ---
 
 ## ¿Qué hace la app?
