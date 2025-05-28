@@ -38,7 +38,7 @@ del RedSismica.db
 ```
 También puedes eliminarlo manualmente desde el explorador de archivos.
 
-### **4. Aplicar las migraciones y crear la base de datos**
+### **4. Aplicar las migraciones y crear la base de datos** //NO LO HAGAN, PUEDE FALLAR EL RUN DESPUES
 Ejecuta el siguiente comando para inicializar la base de datos:
 ```sh
 dotnet ef database update
