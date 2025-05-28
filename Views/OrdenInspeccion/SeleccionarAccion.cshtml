@@ -1,17 +1,161 @@
 @{
     ViewData["Title"] = "Acciones sobre Órdenes de Inspección";
 }
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+    body {
+        background: #f0f2f5;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    header {
+        background: linear-gradient(90deg, #003366, #0056b3);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 5px solid #ffc107;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    header p {
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    footer {
+        background-color: #212529;
+        color: #ccc;
+        padding: 2rem 1rem;
+        margin-top: 5rem;
+        font-size: 0.85rem;
+    }
+
+    footer h5 {
+        color: #f8f9fa;
+    }
+
+    .action-card {
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        background: #ffffff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .action-btn {
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    header {
+    background: linear-gradient(90deg, #003366, #0056b3);
+    color: white;
+    padding: 2rem 1rem;
+    border-bottom: 5px solid #ffc107;
+    }
+
+    .custom-integrantes-btn {
+        background-color: white;
+        color: #0056b3
+        border: 2px solid white;
+        transition: all 0.3s ease;
+    }
+
+    .custom-integrantes-btn:hover {
+        background-color:#ffc107; /* Azul oscuro */
+        color: rgb(0, 0, 0);
+        border-color: white;
+    }
+
+    .custom-integrantes-btn i {
+        color: white;
+    }
+
+    .custom-integrantes-btn:hover i {
+        color: white;
+    }
+</style>
+
+</style>
+
+<header class="d-flex flex-column align-items-center justify-content-center text-center gap-3">
+    <h1 class="mb-1"><i class="bi bi-diagram-3-fill me-2"></i> Red Sísmica Argentina</h1>
+    
+<button class="btn custom-integrantes-btn d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm"
+    data-bs-toggle="modal" data-bs-target="#integrantesModal">
+    <i class="bi text-black bi-people-fill"></i> Ver Datos Integrantes
+</button>
+
+    
+    <p class="mb-0">Facultad Regional Córdoba - Diseño de Sistemas de Información</p>
+</header>
+
 <div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h3><i class="bi bi-list-task"></i> Acciones disponibles</h3>
-        </div>
-        <div class="card-body text-center">
-            <a class="btn btn-lg btn-success" href="@Url.Action("Index", "OrdenInspeccion")">
-                <i class="bi bi-clipboard-check"></i> Cerrar Órdenes de Inspección
-            </a>
+    <div class="action-card mx-auto col-md-8 col-lg-6">
+        <h3 class="mb-4 text-primary"><i class="bi bi-list-task"></i> Acciones Disponibles</h3>
+        <a class="btn btn-success action-btn mb-3" href="@Url.Action("Index", "OrdenInspeccion")">
+            <i class="bi bi-clipboard-check me-2"></i> Cerrar Órdenes de Inspección
+        </a>
+    </div>
+</div>
+
+<!-- MODAL Integrantes -->
+<div class="modal fade" id="integrantesModal" tabindex="-1" aria-labelledby="integrantesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="integrantesModalLabel">Integrantes del Grupo G4</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="col"><strong>Allende Tomás</strong> · 400738 · tomimau66@gmail.com</div>
+                    <div class="col"><strong>Brenner Jose Tomás</strong> · 402739 · josetomasbrenner97@gmail.com</div>
+                    <div class="col"><strong>Gaitan Baltasar</strong> · 401077 · baltasargaitan12@gmail.com</div>
+                    <div class="col"><strong>Gedda Juan</strong> · 400746 · juangedda@gmail.com</div>
+                    <div class="col"><strong>Leal Santiago</strong> · 406280 · santiagoleal092@gmail.com</div>
+                    <div class="col"><strong>Marín Leon</strong> · 400517 · leonmarinfont@gmail.com</div>
+                    <div class="col"><strong>Mansilla Iker</strong> · 402544 · ikermavi2015@gmail.com</div>
+                    <div class="col"><strong>Moyano Joaquín</strong> · 96511 · joaco201413@gmail.com</div>
+                    <div class="col"><strong>Rivarola Aldana</strong> · 407066 · aldu.riva04@gmail.com</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<!-- FOOTER -->
+<footer style="background: linear-gradient(90deg, #001f3f, #003366); color: #f1f1f1;">
+    <div class="container text-center">
+        <h5 class="text-warning fw-bold mb-3">Red Sísmica Argentina</h5>
+        <p class="mb-1">Facultad Regional Córdoba</p>
+        <p class="mb-1">Diseño de Sistemas de Información - Cátedra: DSI 3K01</p>
+        <p class="mb-1">Proyecto de Aplicación Integrador - Análisis</p>
+        <p class="mb-1">Entrega: <strong>E1</strong> · Fecha: <strong>30/05/2025</strong></p>
+        <hr class="my-4" style="border-color: #888;" />
+        <h6 class="text-light">Docentes del curso</h6>
+        <p class="mb-0">Meles, Judith – Docente Teórico</span></p>
+        <p class="mb-0">Abdala, Valeria – JTP</span></p>
+        <p class="mb-0">Vega, Sol – Ayudante</span></p>
+        <p class="mb-2">Pomenich, Marcos – Adscripto</span></p>
+        <div class="text-center mt-4 text-secondary" style="font-size: 0.9rem;">
+            © 2025 - Red Sísmica · Facultad Regional Córdoba · Grupo G4
+        </div>
+        
+
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
