@@ -96,6 +96,9 @@ namespace RedSismica.Migrations
                     b.Property<int>("EstadoId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SismografoId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("codigoEstacion")
                         .HasColumnType("TEXT");
 
@@ -280,7 +283,8 @@ namespace RedSismica.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EstacionSismologicaId");
+                    b.HasIndex("EstacionSismologicaId")
+                        .IsUnique();
 
                     b.HasIndex("EstadoId");
 
@@ -421,8 +425,8 @@ namespace RedSismica.Migrations
             modelBuilder.Entity("RedSismica.Models.Sismografo", b =>
                 {
                     b.HasOne("RedSismica.Models.EstacionSismologica", "estacion")
-                        .WithMany("Sismografos")
-                        .HasForeignKey("EstacionSismologicaId")
+                        .WithOne("Sismografo")
+                        .HasForeignKey("RedSismica.Models.Sismografo", "EstacionSismologicaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -455,7 +459,7 @@ namespace RedSismica.Migrations
 
             modelBuilder.Entity("RedSismica.Models.EstacionSismologica", b =>
                 {
-                    b.Navigation("Sismografos");
+                    b.Navigation("Sismografo");
                 });
 
             modelBuilder.Entity("RedSismica.Models.OrdenDeInspeccion", b =>

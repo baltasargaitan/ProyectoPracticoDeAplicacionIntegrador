@@ -24,7 +24,7 @@ namespace RedSismica.Models
             return _context.Empleados.FirstOrDefault(e => e.Id == 1); // Hardcode para demo
         }
 
-        // 2. Buscar órdenes completamente realizadas asignadas al RI
+                // 2. Buscar órdenes completamente realizadas asignadas al RI
         public List<OrdenDeInspeccion> buscarOrdenes()
         {
             var empleado = buscarRILogueado();
@@ -33,19 +33,12 @@ namespace RedSismica.Models
                 throw new Exception("No se encontró un empleado asociado a la sesión actual.");
             }
 
-            var ordenes = _context.OrdenesInspeccion
+            return _context.OrdenesInspeccion
                 .Include(o => o.Estacion)
-                .Include(o => o.Empleado)
-                .Include(o => o.CambiosEstado)
+                    .ThenInclude(e => e.Sismografo) // Incluye el sismógrafo de la estación
+                .Include(o => o.Empleado) // Incluye el empleado responsable
                 .Where(o => o.EmpleadoId == empleado.Id && o.EstadoId == 4) // Estado "Completamente Realizada"
                 .ToList();
-
-            if (!ordenes.Any())
-            {
-                throw new Exception("No se encontraron órdenes completamente realizadas para el empleado logueado.");
-            }
-
-            return ordenes;
         }
 
         // 3. Ordenar las órdenes
@@ -54,12 +47,14 @@ namespace RedSismica.Models
             return ordenes.OrderBy(o => o.fechaHoraInicio).ToList();
         }
 
-        // 4. Tomar selección de una orden
+                // 4. Tomar selección de una orden
         public OrdenDeInspeccion tomarSeleccionOrden(int ordenId)
         {
             return _context.OrdenesInspeccion
                 .Include(o => o.Estacion)
-                .Include(o => o.CambiosEstado)
+                    .ThenInclude(e => e.Sismografo) // Incluye el sismógrafo de la estación
+                .Include(o => o.Empleado) // Incluye el empleado responsable
+                .Include(o => o.CambiosEstado) // Incluye los cambios de estado
                 .FirstOrDefault(o => o.Id == ordenId);
         }
 
@@ -113,30 +108,30 @@ namespace RedSismica.Models
         // 9. Obtener estado "Cerrado" para la orden
         public Estado buscarEstadoCerradoParaOrden()
         {
-            return _context.Estados.FirstOrDefault(e => e.esAmbitoOrdenInspeccion() && e.esCerrada());
+            return _context.Estados
+                .AsEnumerable() // Forzar evaluación en memoria
+                .FirstOrDefault(e => e.esAmbitoOrdenInspeccion() && e.esCerrada());
         }
 
         // 10. Obtener estado "Fuera de Servicio" para el sismógrafo
         public Estado buscarEstadoFueraDeServicioParaSismografo()
         {
-            return _context.Estados.FirstOrDefault(e => e.esAmbitoSismografico() && e.nombreEstado == "Fuera de Servicio");
+            return _context.Estados
+                .AsEnumerable() // Forzar evaluación en memoria
+                .FirstOrDefault(e => e.esAmbitoSismografico() && e.nombreEstado == "Fuera de Servicio");
         }
-
-        // 11. Cerrar la orden
+                // 11. Cerrar la orden
         public void cerrarOrden(OrdenDeInspeccion orden)
         {
             var estadoCerrado = buscarEstadoCerradoParaOrden();
             if (estadoCerrado == null)
                 throw new Exception("No existe un estado 'Cerrado' para órdenes de inspección.");
 
-            orden.setEstado(estadoCerrado);
-            orden.setFechaHoraCierre(DateTime.Now);
+            orden.setEstado(estadoCerrado); // Cambia el estado a "Cerrada"
+            orden.setFechaHoraCierre(DateTime.Now); // Establece la fecha y hora de cierre
 
-            var estadoFueraServicio = buscarEstadoFueraDeServicioParaSismografo();
-            if (estadoFueraServicio == null)
-                throw new Exception("No existe un estado 'Fuera de Servicio' para sismógrafos.");
-
-            orden.Estacion.Sismografo.setEstadoActual(estadoFueraServicio);
+            _context.OrdenesInspeccion.Update(orden); // Actualiza la orden en el contexto
+            _context.SaveChanges(); // Guarda los cambios en la base de datos
         }
 
         // 12. Enviar sismógrafo para reparación

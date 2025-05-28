@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RedSismica.Migrations
 {
-    public partial class Inicial : Migration
+    public partial class AddSismografoIdToEstaciones : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -64,7 +64,8 @@ namespace RedSismica.Migrations
                     nroCertificacionAdquisicion = table.Column<string>(type: "TEXT", nullable: true),
                     latitud = table.Column<double>(type: "REAL", nullable: false),
                     longitud = table.Column<double>(type: "REAL", nullable: false),
-                    EstadoId = table.Column<int>(type: "INTEGER", nullable: false)
+                    EstadoId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SismografoId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -340,7 +341,8 @@ namespace RedSismica.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Sismografos_EstacionSismologicaId",
                 table: "Sismografos",
-                column: "EstacionSismologicaId");
+                column: "EstacionSismologicaId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sismografos_EstadoId",

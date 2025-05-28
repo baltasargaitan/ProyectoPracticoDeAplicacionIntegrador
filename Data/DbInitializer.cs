@@ -59,44 +59,46 @@ namespace RedSismica.Data
             context.MotivosTipo.AddRange(tiposMotivo);
             context.SaveChanges();
 
-            // Estaciones y sismógrafos
-            var estaciones = new List<EstacionSismologica>
+            // Estaciones y sismógrafos (relación 1 a 1)
+            var estaciones = new List<EstacionSismologica>();
+            for (int i = 1; i <= 2; i++) // Crear 2 estaciones
             {
-                new EstacionSismologica
+                estaciones.Add(new EstacionSismologica
                 {
-                    Id = 1,
-                    codigoEstacion = "EST-001",
-                    nombre = "Estación Norte",
-                    latitud = -31.4167,
-                    longitud = -64.1833,
+                    Id = i,
+                    codigoEstacion = $"EST-{i:D3}",
+                    nombre = i == 1 ? "Estación Norte" : "Estación Sur",
+                    latitud = i == 1 ? -31.4167 : -38.9516,
+                    longitud = i == 1 ? -64.1833 : -68.0591,
                     estadoActual = estados.First(e => e.nombreEstado == "Operativo"),
-                    Sismografos = new List<Sismografo>
+                    Sismografo = new Sismografo
                     {
-                        new Sismografo { Id = 1, IdentificacionSismografo = "SG-1001", nroSerie = "SN-001", fechaAdquisicion = DateTime.Now.AddYears(-2), Estado = estados.First(e => e.nombreEstado == "Operativo") }
+                        Id = i,
+                        IdentificacionSismografo = $"SG-{i:D4}", // Genera identificador único dinámico
+                        nroSerie = $"SN-{i:D3}",
+                        fechaAdquisicion = DateTime.Now.AddYears(-i),
+                        Estado = estados.First(e => e.nombreEstado == "Operativo")
                     }
-                },
-                
-                new EstacionSismologica
-                {
-                    Id = 2,
-                    codigoEstacion = "EST-002",
-                    nombre = "Estación Sur",
-                    latitud = -38.9516,
-                    longitud = -68.0591,
-                    estadoActual = estados.First(e => e.nombreEstado == "Operativo"),
-                    Sismografos = new List<Sismografo>
-                    {
-                        new Sismografo { Id = 2, IdentificacionSismografo = "SG-1002", nroSerie = "SN-002", fechaAdquisicion = DateTime.Now.AddYears(-3), Estado = estados.First(e => e.nombreEstado == "Operativo") }
-                    }
-                }
-            };
+                });
+            }
             context.Estaciones.AddRange(estaciones);
             context.SaveChanges();
-            
-            // Órdenes de inspección
+
+
+
+
+            //ordenes 
+
+
+
             var ordenes = new List<OrdenDeInspeccion>();
-            for (int i = 1; i <= 50; i++) // Crear 50 órdenes de inspección
+            int sismografoCount = estaciones.Count; // Número total de sismógrafos (uno por estación)
+
+            for (int i = 1; i <= 2; i++) // Crear 50 órdenes de inspección
             {
+                var estacion = estaciones[(i - 1) % sismografoCount]; // Alterna entre estaciones
+                var sismografoId = estacion.Sismografo.Id; // Obtiene el ID del sismógrafo asociado a la estación
+
                 ordenes.Add(new OrdenDeInspeccion
                 {
                     Id = i,
@@ -104,13 +106,14 @@ namespace RedSismica.Data
                     fechaHoraInicio = DateTime.Now.AddDays(-i),
                     fechaHoraFinalizacion = DateTime.Now.AddDays(-i + 1),
                     EmpleadoId = 1,
-                    EstacionSismologicaId = estaciones.First(e => e.Id == (i % 2 == 0 ? 1 : 2)).Id,
+                    EstacionSismologicaId = estacion.Id, // Asocia la estación
                     EstadoId = estados.First(e => e.nombreEstado == "Completamente Realizada").Id
                 });
-            };
+            }
+            context.OrdenesInspeccion.AddRange(ordenes);
+            context.SaveChanges();;
 
-
-            //Motivos 
+            // Motivos fuera de servicio
             var motivosFueraServicio = new List<MotivoFueraServicio>
             {
                 new MotivoFueraServicio("Problemas eléctricos detectados")
@@ -126,7 +129,7 @@ namespace RedSismica.Data
                     MotivoTipoId = tiposMotivo.First(m => m.tipoMotivo == "Condiciones climáticas").Id
                 }
             };
-            context.OrdenesInspeccion.AddRange(ordenes);
+            context.MotivosFueraServicio.AddRange(motivosFueraServicio);
             context.SaveChanges();
 
             // Usuario y sesión inicial
